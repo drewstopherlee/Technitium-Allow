@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Allow Domain</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        padding: 1rem;
+        width: 320px;
+        background: #f8fafc;
+      }
+      h2 {
+        font-size: 1rem;
+        margin: 0 0 0.5rem;
+        color: #1e293b;
+      }
+      .popup-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+      .popup-header h2 {
+        margin: 0;
+        font-size: 1rem;
+      }
+      .popup-header a {
+        font-size: 0.85rem;
+        text-decoration: none;
+        color: #2563eb;
+      }
+      .popup-header a:hover {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      .section {
+        background: white;
+        border-radius: 10px;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      }
+      .status-message {
+        font-size: .85rem;
+        margin: .25rem 0;
+        padding: .25rem .5rem;
+        border-radius: 6px;
+      }
+
+      .status-success {
+        background-color: #d1fae5;  /* light green */
+        color: #059669;             /* dark green */
+      }
+
+      .status-error {
+        background-color: #fee2e2;  /* light red */
+        color: #dc2626;             /* dark red */
+      }
+      .domain-label {
+        flex-grow: 1;
+      }
+      .status-icon {
+        margin-right: .5rem;
+        font-weight: bold;
+        font-size: 1rem;   /* make sure it’s visible */
+      }
+      button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.4rem 0.8rem;
+        margin-top: 0.5rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      li {
+        padding: 0.25rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      li button {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="popup-header">
+      <h2>Technitium Allow</h2>
+      <a id="optionsLink" href="#">&#9881; Options</a>
+    </div>
+    <div class="section">
+      <h2>Current Domain</h2>
+      <div style="display:flex; justify-content: space-between; align-items:center;">
+        <div id="currentDomain"></div>
+        <button id="allowCurrent">Allow</button>
+      </div>
+      <div id="status"></div>
+    </div>
+
+    <div class="section">
+      <h2>Recent NXDOMAINs</h2>
+      <ul id="historyList"></ul>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

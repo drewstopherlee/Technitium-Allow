@@ -1,0 +1,26 @@
+name: Build Extension ZIP
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-zip:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up ZIP file
+      run: |
+        VERSION=${{ github.event.release.tag_name }}
+        ZIP_NAME=technitium-allow-$VERSION.zip
+        zip -r $ZIP_NAME src manifest.json icons README.md LICENSE
+
+    - name: Upload ZIP as release artifact
+      uses: softprops/action-gh-release@v1
+      with:
+        files: technitium-allow-${{ github.event.release.tag_name }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
