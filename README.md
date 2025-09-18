@@ -35,17 +35,9 @@ Technitium-Allow is a Chrome extension that detects domains that fail to resolve
 
 ## Screenshots
 
-Popup (light)
+![Popup Light](assets/popup-light.png)![Popup Dark](assets/popup-dark.png)
 
-![Popup Light](assets/popup-light.png)
-
-Popup (dark)
-
-![Popup Dark](assets/popup-dark.png)
-
-Options
-
-![Options Light](assets/options-light.png)
+![Options Light](assets/options-light.png)![Options Dark](assets/options-dark.png)
 
 ---
 
