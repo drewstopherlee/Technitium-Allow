@@ -38,7 +38,7 @@ function appendStatus(msg, ok = true, linkToOptions = false) {
     statusEl.scrollTop = statusEl.scrollHeight;
 }
 
-// Show check/X next to NXDOMAIN entry
+// Show temporary check/X next to NXDOMAIN entry
 function showHistoryStatus(historyItemEl, success) {
     if (!historyItemEl) return;
 
@@ -52,6 +52,11 @@ function showHistoryStatus(historyItemEl, success) {
     // Use HTML entities to avoid garbled Unicode
     icon.innerHTML = success ? "&#10003;" : "&#10007;";
     icon.className = `status-icon ${success ? 'status-success' : 'status-error'}`;
+
+    // Temporary: remove after 2 seconds
+    setTimeout(() => {
+        if (icon && icon.parentNode) icon.remove();
+    }, 2000);
 }
 
 // Add domain to all configured servers
@@ -66,15 +71,8 @@ function addDomain(domain, historyItemEl = null) {
         data.servers.forEach(server => {
             const endpoint = `${server.url}/api/allowed/add?token=${encodeURIComponent(server.key)}&domain=${encodeURIComponent(domain)}`;
             fetch(endpoint, { method: "POST" })
-                .then(async res => {
+                .then(res => {
                     if (res.ok) {
-                        // Save to allowedDomains
-                        chrome.storage.local.get({ allowedDomains: [] }, (s) => {
-                            const allowed = new Set(s.allowedDomains);
-                            allowed.add(domain);
-                            chrome.storage.local.set({ allowedDomains: Array.from(allowed) });
-                        });
-
                         if (historyItemEl) showHistoryStatus(historyItemEl, true);
                         else appendStatus(`Zone "${domain}" added on ${server.url}`, true);
                     } else {
@@ -94,7 +92,6 @@ function addDomain(domain, historyItemEl = null) {
 // Main Initialization
 // ----------------------
 document.addEventListener("DOMContentLoaded", async () => {
-    // Get references to DOM elements
     const currentDomainEl = document.getElementById("currentDomain");
     const allowCurrentBtn = document.getElementById("allowCurrent");
     const historyListEl = document.getElementById("historyList");
@@ -128,9 +125,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (currentDomain) addDomain(currentDomain);
     });
 
-    // Load NXDOMAIN history and allowed domains
-    chrome.storage.local.get({ nxdomainHistory: [], allowedDomains: [] }, (data) => {
-        const { nxdomainHistory, allowedDomains } = data;
+    // Load NXDOMAIN history
+    chrome.storage.local.get({ nxdomainHistory: [] }, (data) => {
+        const { nxdomainHistory } = data;
         historyListEl.innerHTML = "";
 
         if (!nxdomainHistory.length) {
@@ -142,14 +139,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         nxdomainHistory.forEach(domain => {
             const li = document.createElement("li");
-
-            // Status icon for allowed domains
-            if (allowedDomains.includes(domain)) {
-                const icon = document.createElement("span");
-                icon.className = "status-icon status-success";
-                icon.innerHTML = "&#10003;";
-                li.appendChild(icon);
-            }
 
             // Domain label
             const label = document.createElement("span");
@@ -166,31 +155,20 @@ document.addEventListener("DOMContentLoaded", async () => {
             historyListEl.appendChild(li);
         });
     });
-});
 
-// ----------------------
-// Clear History Function
-// ----------------------
-const clearBtn = document.getElementById("clearHistory");
-const confirmBtn = document.getElementById("confirmClear");
-
-if (clearBtn && confirmBtn) {
-    clearBtn.addEventListener("click", () => {
-        clearBtn.classList.add("hide");     // fade out Clear All
-        confirmBtn.classList.add("show");   // fade in Confirm?
-    });
-
-    confirmBtn.addEventListener("click", () => {
-        // Clear NXDOMAIN history
-        chrome.storage.local.set({ nxdomainHistory: [] }, () => {
-            // Clear the list in the popup
-            const historyListEl = document.getElementById("historyList");
-            if (historyListEl) {
-                historyListEl.innerHTML = "<li><em>No NXDOMAINs yet</em></li>";
-            }
-            // Reset buttons
-            confirmBtn.classList.remove("show");  // hide Confirm?
-            clearBtn.classList.remove("hide");    // show Clear All
+    // Clear History buttons
+    if (clearBtn && confirmBtn) {
+        clearBtn.addEventListener("click", () => {
+            clearBtn.classList.add("hide");
+            confirmBtn.classList.add("show");
         });
-    });
-}
+
+        confirmBtn.addEventListener("click", () => {
+            chrome.storage.local.set({ nxdomainHistory: [] }, () => {
+                historyListEl.innerHTML = "<li><em>No NXDOMAINs yet</em></li>";
+                confirmBtn.classList.remove("show");
+                clearBtn.classList.remove("hide");
+            });
+        });
+    }
+});
