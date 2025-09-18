@@ -20,10 +20,10 @@ Technitium-Allow is a Chrome extension that detects domains that were blocked by
 ## Screenshots
 
 **Popup with NXDOMAIN history**  
-![Popup Example](assets/popup-example.png)
+![Popup Example (Light Mode)](assets/popup-light.png)![Popup Example (Dark Mode)](assets/popup-dark.png)
 
 **Options page**  
-![Options Example](assets/options-example.png)
+![Options Example (Light Mode)](assets/options-light.png)![Options Example (Dark Mode)](assets/options-dark.png)
 
 ---
 
