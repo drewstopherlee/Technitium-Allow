@@ -1,11 +1,5 @@
 # Technitium-Allow
 
-Adds domains to Technitium DNS Allowed Zones when NXDOMAIN is encountered.
-
-Technitium-Allow is a Chrome extension that detects domains that fail to resolve (NXDOMAIN) and lets you quickly add them to your Technitium DNS Allowed Zones. It keeps a small history of NXDOMAINs and lets you add the current site manually.
-
-# Technitium-Allow
-
 **Adds domains to Technitium DNS Allowed Zones when NXDOMAIN is encountered.**
 
 Technitium-Allow is a Chrome extension that detects domains that fail to resolve (NXDOMAIN) and lets you quickly add them to your Technitium DNS Allowed Zones. It keeps a small history of NXDOMAINs and lets you add the current site manually.
@@ -18,18 +12,7 @@ Technitium-Allow is a Chrome extension that detects domains that fail to resolve
 - Maintains a short history of recently failed domains
 - Manually allow the current domain with one click
 - Try multiple configured Technitium servers when adding a domain
-
----
-
----
-
-
-## Features
-
-- Detects NXDOMAIN errors while browsing
-- Maintains a short history of recently failed domains
-- Manually allow the current domain with one click
-- Try multiple configured Technitium servers when adding a domain
+- ***Dark mode***
 
 ---
 
