@@ -1,0 +1,17 @@
+{
+  "name": "technitium-allow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome extension to add domains to Technitium DNS Allowed Zones",
+  "scripts": {
+    "lint": "eslint 'src/**/*.js'",
+    "fix": "eslint 'src/**/*.js' --fix",
+    "format": "prettier --write '**/*.{js,html,css,json,md}'"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "prettier": "^2.0.0"
+  }
+}

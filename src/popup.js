@@ -2,30 +2,23 @@
 // Helper Functions
 // ----------------------
 
-// Open extension options page
-function openOptions() {
-    if (chrome.runtime.openOptionsPage) {
-        chrome.runtime.openOptionsPage();
-    } else {
-        window.open(chrome.runtime.getURL("options.html"));
-    }
-}
+const openOptions = () => {
+    if (chrome.runtime.openOptionsPage) chrome.runtime.openOptionsPage();
+    else window.open(chrome.runtime.getURL('options.html'));
+};
 
-// Append status messages for current domain
-function appendStatus(msg, ok = true, linkToOptions = false) {
-    const statusEl = document.getElementById("status");
+const appendStatus = (msg, ok = true, linkToOptions = false) => {
+    const statusEl = document.getElementById('status');
     if (!statusEl) return;
 
-    const div = document.createElement("div");
-    div.style.color = ok ? "#059669" : "#dc2626";
+    const div = document.createElement('div');
+    div.className = ok ? 'status-success' : 'status-error';
 
     if (linkToOptions) {
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         link.textContent = msg;
-        link.style.color = "#dc2626";
-        link.style.textDecoration = "underline";
-        link.href = "#";
-        link.addEventListener("click", (e) => {
+        link.href = '#';
+        link.addEventListener('click', (e) => {
             e.preventDefault();
             openOptions();
         });
@@ -36,42 +29,42 @@ function appendStatus(msg, ok = true, linkToOptions = false) {
 
     statusEl.appendChild(div);
     statusEl.scrollTop = statusEl.scrollHeight;
-}
+};
 
-// Show temporary check/X next to NXDOMAIN entry
-function showHistoryStatus(historyItemEl, success) {
+const showHistoryStatus = (historyItemEl, success) => {
     if (!historyItemEl) return;
 
-    let icon = historyItemEl.querySelector(".status-icon");
+    let icon = historyItemEl.querySelector('.status-icon');
     if (!icon) {
-        icon = document.createElement("span");
-        icon.className = "status-icon";
+        icon = document.createElement('span');
+        icon.className = 'status-icon';
         historyItemEl.prepend(icon);
     }
 
-    // Use HTML entities to avoid garbled Unicode
-    icon.innerHTML = success ? "&#10003;" : "&#10007;";
+    icon.innerHTML = success ? '&#10003;' : '&#10007;';
     icon.className = `status-icon ${success ? 'status-success' : 'status-error'}`;
 
-    // Temporary: remove after 2 seconds
     setTimeout(() => {
         if (icon && icon.parentNode) icon.remove();
     }, 2000);
-}
+};
 
-// Add domain to all configured servers
-function addDomain(domain, historyItemEl = null) {
+const addDomain = (domain, historyItemEl = null) => {
     chrome.storage.sync.get({ servers: [] }, (data) => {
-        if (!data.servers.length) {
+        const servers = data.servers || [];
+        if (!servers.length) {
             if (historyItemEl) showHistoryStatus(historyItemEl, false);
-            else appendStatus("No servers configured! Please set them in options.", false, true);
+            else appendStatus('No servers configured! Please set them in options.', false, true);
             return;
         }
 
-        data.servers.forEach(server => {
-            const endpoint = `${server.url}/api/allowed/add?token=${encodeURIComponent(server.key)}&domain=${encodeURIComponent(domain)}`;
-            fetch(endpoint, { method: "POST" })
-                .then(res => {
+        servers.forEach((server) => {
+            const endpoint = `${server.url.replace(/\/$/, '')}/api/allowed/add?token=${encodeURIComponent(
+                server.key
+            )}&domain=${encodeURIComponent(domain)}`;
+
+            fetch(endpoint, { method: 'POST' })
+                .then((res) => {
                     if (res.ok) {
                         if (historyItemEl) showHistoryStatus(historyItemEl, true);
                         else appendStatus(`Zone "${domain}" added on ${server.url}`, true);
@@ -80,13 +73,13 @@ function addDomain(domain, historyItemEl = null) {
                         else appendStatus(`Failed on ${server.url}`, false);
                     }
                 })
-                .catch(err => {
+                .catch((err) => {
                     if (historyItemEl) showHistoryStatus(historyItemEl, false);
                     else appendStatus(`Error contacting ${server.url}: ${err}`, false);
                 });
         });
     });
-}
+};
 
 // ----------------------
 // Main Initialization
