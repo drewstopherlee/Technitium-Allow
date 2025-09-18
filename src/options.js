@@ -1,68 +1,108 @@
+let unsaved = false;
+
+function markUnsaved() {
+    unsaved = true;
+    saveBtn.classList.add("unsaved");
+}
+
+function markSaved() {
+    unsaved = false;
+    saveBtn.classList.remove("unsaved");
+}
+
+function showStatus(msg) {
+    const status = document.getElementById("status");
+    status.textContent = msg;
+    setTimeout(() => (status.textContent = ""), 2000);
+}
+
+const list = document.getElementById("serverList");
+
+// --- Create Save All button once ---
+let saveBtn = document.getElementById("saveAllBtn");
+if (!saveBtn) {
+    saveBtn = document.createElement("button");
+    saveBtn.id = "saveAllBtn";
+    saveBtn.textContent = "💾 Save All";
+    saveBtn.style.marginBottom = "1rem";
+    list.parentNode.insertBefore(saveBtn, document.getElementById("addServer"));
+
+    saveBtn.addEventListener("click", () => {
+        const allServers = [];
+        const serverDivs = list.getElementsByClassName("server");
+        for (const div of serverDivs) {
+            const inputs = div.getElementsByTagName("input");
+            allServers.push({
+                url: inputs[0].value.trim(),
+                key: inputs[1].value.trim(),
+            });
+        }
+        chrome.storage.sync.set({ servers: allServers }, () => {
+            showStatus("All servers saved!");
+            markSaved();
+            renderServers(allServers); // re-render to refresh remove buttons if needed
+        });
+    });
+}
+
 function renderServers(servers = []) {
-    const list = document.getElementById("serverList");
     list.innerHTML = "";
 
     servers.forEach((server, idx) => {
         const wrapper = document.createElement("div");
         wrapper.className = "server";
 
-        // URL input
+        // URL input group
+        const urlWrapper = document.createElement("div");
+        urlWrapper.className = "input-group";
+
         const urlLabel = document.createElement("label");
         urlLabel.textContent = "Server URL:";
+
         const urlInput = document.createElement("input");
         urlInput.type = "text";
         urlInput.value = server.url || "";
         urlInput.placeholder = "http://example.com:5380";
+        urlInput.addEventListener("input", markUnsaved);
 
-        // Key input
+        urlWrapper.appendChild(urlLabel);
+        urlWrapper.appendChild(urlInput);
+
+        // Key input group
+        const keyWrapper = document.createElement("div");
+        keyWrapper.className = "input-group";
+
         const keyLabel = document.createElement("label");
         keyLabel.textContent = "API Key:";
+
         const keyInput = document.createElement("input");
         keyInput.type = "text";
         keyInput.value = server.key || "";
         keyInput.placeholder = "API key";
+        keyInput.addEventListener("input", markUnsaved);
 
-        // Buttons
-        const buttons = document.createElement("div");
-        buttons.className = "buttons";
+        keyWrapper.appendChild(keyLabel);
+        keyWrapper.appendChild(keyInput);
 
-        const saveBtn = document.createElement("button");
-        saveBtn.textContent = "💾 Save";
-        saveBtn.addEventListener("click", () => {
-            servers[idx] = { url: urlInput.value.trim(), key: keyInput.value.trim() };
-            chrome.storage.sync.set({ servers }, () => {
-                showStatus("Saved!");
-            });
-        });
+        wrapper.appendChild(urlWrapper);
+        wrapper.appendChild(keyWrapper);
 
-        const removeBtn = document.createElement("button");
-        removeBtn.textContent = "🗑 Remove";
-        removeBtn.className = "secondary";
-        removeBtn.addEventListener("click", () => {
-            servers.splice(idx, 1);
-            chrome.storage.sync.set({ servers }, () => {
+        // Remove button only if more than 1 server
+        if (servers.length > 1) {
+            const removeBtn = document.createElement("button");
+            removeBtn.textContent = "🗑 Remove";
+            removeBtn.className = "secondary";
+            removeBtn.style.marginTop = "0.5rem";
+            removeBtn.addEventListener("click", () => {
+                servers.splice(idx, 1);
                 renderServers(servers);
-                showStatus("Removed.");
+                markUnsaved();
             });
-        });
-
-        buttons.appendChild(saveBtn);
-        buttons.appendChild(removeBtn);
-
-        wrapper.appendChild(urlLabel);
-        wrapper.appendChild(urlInput);
-        wrapper.appendChild(keyLabel);
-        wrapper.appendChild(keyInput);
-        wrapper.appendChild(buttons);
+            wrapper.appendChild(removeBtn);
+        }
 
         list.appendChild(wrapper);
     });
-}
-
-function showStatus(msg) {
-    const status = document.getElementById("status");
-    status.textContent = msg;
-    setTimeout(() => status.textContent = "", 2000);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -74,9 +114,8 @@ document.addEventListener("DOMContentLoaded", () => {
         chrome.storage.sync.get({ servers: [] }, (data) => {
             const servers = data.servers;
             servers.push({ url: "", key: "" });
-            chrome.storage.sync.set({ servers }, () => {
-                renderServers(servers);
-            });
+            renderServers(servers);
+            markUnsaved();
         });
     });
 });

@@ -99,6 +99,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const allowCurrentBtn = document.getElementById("allowCurrent");
     const historyListEl = document.getElementById("historyList");
     const statusEl = document.getElementById("status");
+    const clearBtn = document.getElementById("clearHistory");
+    const confirmBtn = document.getElementById("confirmClear");
     const optionsLink = document.getElementById("optionsLink");
 
     if (!currentDomainEl || !allowCurrentBtn || !historyListEl || !statusEl) return;
@@ -165,3 +167,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 });
+
+// ----------------------
+// Clear History Function
+// ----------------------
+const clearBtn = document.getElementById("clearHistory");
+const confirmBtn = document.getElementById("confirmClear");
+
+if (clearBtn && confirmBtn) {
+    clearBtn.addEventListener("click", () => {
+        clearBtn.classList.add("hide");     // fade out Clear All
+        confirmBtn.classList.add("show");   // fade in Confirm?
+    });
+
+    confirmBtn.addEventListener("click", () => {
+        // Clear NXDOMAIN history
+        chrome.storage.local.set({ nxdomainHistory: [] }, () => {
+            // Clear the list in the popup
+            const historyListEl = document.getElementById("historyList");
+            if (historyListEl) {
+                historyListEl.innerHTML = "<li><em>No NXDOMAINs yet</em></li>";
+            }
+            // Reset buttons
+            confirmBtn.classList.remove("show");  // hide Confirm?
+            clearBtn.classList.remove("hide");    // show Clear All
+        });
+    });
+}

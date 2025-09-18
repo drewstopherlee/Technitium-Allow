@@ -1,3 +1,23 @@
+# Node modules (if using any build tools)
 node_modules/
-*.log
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# VSCode settings
+.vscode/
+
+# Temporary or backup files
+*.bak
+*.tmp
+*.swp
+
+# Chrome extension packaging outputs (if you zip or build)
+*.zip
+
+# Optional: any local secrets
+secrets.json
