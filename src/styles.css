@@ -35,6 +35,9 @@ body{
   margin:0;padding:1rem;background:var(--bg);color:var(--text);
 }
 
+/* Popup minimum width */
+.popup{min-width:300px}
+
 .popup-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem}
 h1,h2{margin:0 0 0.5rem}
 
