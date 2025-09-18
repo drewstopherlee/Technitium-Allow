@@ -108,4 +108,4 @@ npm run format
 
 ## License
 
-MIT — see the LICENSE file for details.
+MIT — see the [LICENSE file](LICENSE) for details.
